@@ -1,0 +1,11 @@
+name: Usage question
+description: Ask for community help
+labels: [question]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question and what you have tried
+      description: Include revision and sanitized setup. No support SLA is offered.
+    validations:
+      required: true

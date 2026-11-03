@@ -1,0 +1,27 @@
+services:
+  agent-bucket:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      AB_API_TOKEN: ${AB_API_TOKEN:-local-demo-token-change-me}
+      AB_SOURCE: ${AB_SOURCE:-demo}
+      AB_EMBEDDING_PROVIDER: ${AB_EMBEDDING_PROVIDER:-hash}
+      AB_EMBEDDING_MODEL: ${AB_EMBEDDING_MODEL:-BAAI/bge-small-en-v1.5}
+      AB_EMBEDDING_DIMENSIONS: ${AB_EMBEDDING_DIMENSIONS:-384}
+      AB_S3_ENDPOINT: ${AB_S3_ENDPOINT:-}
+      AB_S3_BUCKET: ${AB_S3_BUCKET:-agent-bucket-demo}
+      AB_S3_PREFIX: ${AB_S3_PREFIX:-}
+      AB_S3_REGION: ${AB_S3_REGION:-us-east-1}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
+    volumes:
+      - agent-bucket-data:/data
+    restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+volumes:
+  agent-bucket-data:

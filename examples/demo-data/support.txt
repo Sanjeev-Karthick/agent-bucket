@@ -1,0 +1,1 @@
+Support hours for the fictional Northstar demo team are Monday through Friday, 09:00 to 17:00 UTC. This is synthetic demo data. File a GitHub issue for reproducible agent-bucket bugs and use private vulnerability reporting for security problems.

@@ -1,0 +1,18 @@
+name: Feature request
+description: Explain a use case and proposed behavior
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior and alternatives
+  - type: textarea
+    id: scope
+    attributes:
+      label: Fit with single-node V0.1 or the future roadmap

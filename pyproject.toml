@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agent-bucket"
+version = "0.1.0a1"
+description = "A retrieval sidecar for existing S3-compatible object stores"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = "Apache-2.0"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn[standard]>=0.34,<1",
+  "mcp>=1.26,<2",
+  "pydantic-settings>=2.7,<3",
+  "lancedb>=0.30,<0.42",
+  "pyarrow>=18,<24",
+  "boto3>=1.36,<2",
+]
+
+[project.optional-dependencies]
+inference = ["fastembed>=0.6,<1"]
+parsing = ["docling>=2.70,<3"]
+dev = [
+  "pytest>=8.3,<10", "pytest-cov>=6,<8", "httpx>=0.28,<1",
+  "ruff>=0.11,<1", "mypy>=1.15,<2", "boto3-stubs[s3]>=1.36,<2",
+]
+
+[project.urls]
+Homepage = "https://github.com/Sanjeev-Karthick/agent-bucket"
+Issues = "https://github.com/Sanjeev-Karthick/agent-bucket/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend/agent_bucket"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["backend/agent_bucket"]
+
+[[tool.mypy.overrides]]
+module = ["lancedb.*", "pyarrow.*", "docling.*", "fastembed.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = ["integration: requires a running MinIO service", "models: downloads real ML models"]

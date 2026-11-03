@@ -1,0 +1,27 @@
+name: Bug report
+description: Report a reproducible problem with the starter
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Please report security vulnerabilities privately via SECURITY.md. Do not include credentials or private documents.
+  - type: input
+    id: version
+    attributes:
+      label: Revision and environment
+      placeholder: Commit, OS, Python/Docker version, embedding provider
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include a minimal synthetic input and sanitized configuration.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true

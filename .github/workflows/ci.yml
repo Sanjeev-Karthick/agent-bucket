@@ -1,0 +1,80 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: '3.12'
+      - run: uv sync --frozen --extra dev
+      - run: uv run ruff check backend tests scripts benchmarks
+      - run: uv run ruff format --check backend tests scripts benchmarks
+      - run: uv run mypy
+      - run: uv run pytest -m 'not integration and not models' --cov=agent_bucket
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+  minio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.12'
+      - run: uv sync --frozen --extra dev
+      - run: docker compose -f compose.minio.yaml up -d
+      - run: curl --retry 20 --retry-all-errors --retry-delay 2 -f http://127.0.0.1:9000/minio/health/ready
+      - run: make integration
+      - if: always()
+        run: docker compose -f compose.minio.yaml down -v
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: agent-bucket:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Smoke test offline demo
+        run: |
+          docker run -d --name ab-smoke -p 127.0.0.1:8000:8000 -e AB_EMBEDDING_PROVIDER=hash agent-bucket:ci
+          curl --retry 20 --retry-all-errors --retry-delay 2 -f http://127.0.0.1:8000/healthz
+          curl -f http://127.0.0.1:8000/
+          curl -f -X POST -H 'Authorization: Bearer local-demo-token-change-me' http://127.0.0.1:8000/v1/sync
+      - if: always()
+        run: docker logs ab-smoke; docker rm -f ab-smoke
