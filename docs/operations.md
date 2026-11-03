@@ -33,7 +33,9 @@ uv sync --frozen --extra dev --extra inference --extra parsing
 
 Set `AB_EMBEDDING_PROVIDER=fastembed` and choose a fresh `AB_DATA_DIR`, then run
 `make dev`. The first embedding/PDF parse may download model artifacts and take time.
-Text and Markdown work without Docling. OCR is disabled in the starter.
+Text and Markdown work without Docling. OCR is disabled in the starter. On Linux,
+the lockfile sources PyTorch/torchvision from the official CPU wheel index to avoid
+installing GPU runtimes in this single-node container.
 
 ## Backup and restore
 

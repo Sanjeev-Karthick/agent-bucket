@@ -21,7 +21,7 @@ dependencies = [
 
 [project.optional-dependencies]
 inference = ["fastembed>=0.6,<1"]
-parsing = ["docling>=2.70,<3"]
+parsing = ["docling>=2.70,<3", "torch>=2.7,<3", "torchvision>=0.22,<1"]
 dev = [
   "pytest>=8.3,<10", "pytest-cov>=6,<8", "httpx>=0.28,<1",
   "ruff>=0.11,<1", "mypy>=1.15,<2", "boto3-stubs[s3]>=1.36,<2",
@@ -30,6 +30,15 @@ dev = [
 [project.urls]
 Homepage = "https://github.com/Sanjeev-Karthick/agent-bucket"
 Issues = "https://github.com/Sanjeev-Karthick/agent-bucket/issues"
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+torchvision = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["backend/agent_bucket"]
