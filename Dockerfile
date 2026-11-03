@@ -5,14 +5,14 @@ RUN npm ci
 COPY frontend/ ./
 RUN npm run build
 
-FROM python:3.12-slim-bookworm AS dependencies
+FROM python:3.15-slim-bookworm AS dependencies
 WORKDIR /app
 RUN pip install --no-cache-dir uv==0.11.32
 COPY pyproject.toml uv.lock README.md ./
 COPY backend/ backend/
 RUN uv sync --frozen --no-dev --extra inference --extra parsing --no-editable
 
-FROM python:3.12-slim-bookworm AS runtime
+FROM python:3.15-slim-bookworm AS runtime
 RUN apt-get update && apt-get install -y --no-install-recommends libglib2.0-0 libgl1 libgomp1 \
     && rm -rf /var/lib/apt/lists/* \
     && groupadd --gid 10001 agentbucket \
