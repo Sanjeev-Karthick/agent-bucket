@@ -15,7 +15,7 @@ dependencies = [
   "mcp>=1.26,<2",
   "pydantic-settings>=2.7,<3",
   "lancedb>=0.30,<0.42",
-  "pyarrow>=18,<24",
+  "pyarrow>=18,<27",
   "boto3>=1.36,<2",
 ]
 
